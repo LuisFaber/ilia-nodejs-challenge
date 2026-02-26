@@ -7,11 +7,11 @@ function getEnv(key: string): string {
 }
 
 const port = process.env.PORT ?? "3001";
-const jwtSecret = process.env.JWT_SECRET;
+const jwtSecret = process.env.ILIACHALLENGE ?? process.env.JWT_SECRET;
 const databaseUrl = process.env.DATABASE_URL;
 
 if (!jwtSecret?.length) {
-  throw new Error("JWT_SECRET must be set in environment");
+  throw new Error("ILIACHALLENGE or JWT_SECRET must be set in environment");
 }
 
 if (!databaseUrl?.length) {
