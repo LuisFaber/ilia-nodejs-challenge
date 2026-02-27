@@ -1,8 +1,9 @@
 import { Module } from "@nestjs/common";
-import { ConfigModule } from "./infrastructure/config/config.module";
-import { PersistenceModule } from "./infrastructure/persistence/persistence.module";
+import { ApplicationModule } from "./application/application.module";
+import { HttpModule } from "./http/http.module";
+import { InfrastructureModule } from "./infrastructure/infrastructure.module";
 
 @Module({
-  imports: [ConfigModule, PersistenceModule],
+  imports: [InfrastructureModule, ApplicationModule, HttpModule],
 })
 export class AppModule {}

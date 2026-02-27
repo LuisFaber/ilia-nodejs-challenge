@@ -1,9 +1,11 @@
+import { Inject, Injectable } from "@nestjs/common";
+import { randomUUID } from "node:crypto";
 import { User } from "../../domain/entities";
 import { DomainError } from "../../domain/errors";
 import type { IPasswordHasher } from "../../domain/services";
 import type { IUserRepository } from "../../domain/repositories";
 import { Email } from "../../domain/value-objects";
-import { randomUUID } from "node:crypto";
+import { PASSWORD_HASHER, USER_REPOSITORY } from "../../domain/ports";
 
 export interface CreateUserInput {
   firstName: string;
@@ -12,9 +14,12 @@ export interface CreateUserInput {
   password: string;
 }
 
+@Injectable()
 export class CreateUserUseCase {
   constructor(
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
+    @Inject(PASSWORD_HASHER)
     private readonly passwordHasher: IPasswordHasher
   ) {}
 

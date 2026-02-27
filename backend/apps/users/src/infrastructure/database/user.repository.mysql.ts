@@ -1,8 +1,10 @@
+import { Injectable } from "@nestjs/common";
 import type { IUserRepository } from "../../domain/repositories";
 import { User } from "../../domain/entities";
-import { PrismaService } from "./prisma/prisma.service";
+import { PrismaService } from "./prisma.service";
 import { toDomain, toPersistence } from "./mappers/user.mapper";
 
+@Injectable()
 export class UserRepositoryMySQL implements IUserRepository {
   constructor(private readonly prisma: PrismaService) {}
 
@@ -41,3 +43,4 @@ export class UserRepositoryMySQL implements IUserRepository {
     await this.prisma.user.delete({ where: { id } });
   }
 }
+

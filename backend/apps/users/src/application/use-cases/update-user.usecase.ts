@@ -1,6 +1,8 @@
+import { Inject, Injectable } from "@nestjs/common";
 import { User } from "../../domain/entities";
 import { DomainError } from "../../domain/errors";
 import type { IUserRepository } from "../../domain/repositories";
+import { USER_REPOSITORY } from "../../domain/ports";
 
 export interface UpdateUserInput {
   id: string;
@@ -8,8 +10,12 @@ export interface UpdateUserInput {
   lastName?: string;
 }
 
+@Injectable()
 export class UpdateUserUseCase {
-  constructor(private readonly userRepository: IUserRepository) {}
+  constructor(
+    @Inject(USER_REPOSITORY)
+    private readonly userRepository: IUserRepository
+  ) {}
 
   async run(input: UpdateUserInput): Promise<User> {
     const existing = await this.userRepository.findById(input.id);

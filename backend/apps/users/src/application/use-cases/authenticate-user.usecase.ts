@@ -1,8 +1,10 @@
+import { Inject, Injectable } from "@nestjs/common";
 import { User } from "../../domain/entities";
 import { DomainError } from "../../domain/errors";
 import type { IPasswordHasher } from "../../domain/services";
 import type { IUserRepository } from "../../domain/repositories";
 import { Email } from "../../domain/value-objects";
+import { PASSWORD_HASHER, USER_REPOSITORY } from "../../domain/ports";
 
 export interface AuthenticateUserInput {
   email: string;
@@ -14,9 +16,12 @@ export interface AuthenticateUserResult {
   payload: { sub: string; email: string };
 }
 
+@Injectable()
 export class AuthenticateUserUseCase {
   constructor(
+    @Inject(USER_REPOSITORY)
     private readonly userRepository: IUserRepository,
+    @Inject(PASSWORD_HASHER)
     private readonly passwordHasher: IPasswordHasher
   ) {}
 

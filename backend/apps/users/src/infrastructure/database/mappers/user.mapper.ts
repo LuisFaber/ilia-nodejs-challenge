@@ -30,3 +30,4 @@ export function toPersistence(user: User) {
     updatedAt: user.updatedAt,
   };
 }
+

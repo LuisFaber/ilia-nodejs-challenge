@@ -1,8 +1,10 @@
+import { Injectable } from "@nestjs/common";
 import { hash as bcryptHash, compare as bcryptCompare } from "bcrypt";
 import type { IPasswordHasher } from "../../domain/services";
 
 const SALT_ROUNDS = 10;
 
+@Injectable()
 export class BcryptPasswordHasher implements IPasswordHasher {
   async hash(password: string): Promise<string> {
     return bcryptHash(password, SALT_ROUNDS);
