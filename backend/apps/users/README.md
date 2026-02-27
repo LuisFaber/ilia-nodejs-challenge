@@ -17,19 +17,51 @@ Microserviço de **Users** — gerenciamento de usuários e autenticação (API 
 
 Copie `.env.example` para `.env` e preencha os valores.
 
+## Portas usadas
+
+| Serviço   | Porta (host) | Descrição              |
+| --------- | ------------- | ---------------------- |
+| Users API | 3002          | Aplicação NestJS       |
+| MySQL     | 3308          | Banco dedicado (Users) — exposto no host para evitar conflito com o MySQL do Wallet (3306) |
+
+O banco **db-users** escuta na porta **3306** dentro da rede Docker; no host a porta exposta é **3308**.
+
+## Banco dedicado
+
+- **MySQL 8** — banco exclusivo do microserviço Users (isolado do Wallet).
+- **Conexão:** `DATABASE_URL=mysql://user:password@db-users:3306/users` (Docker) ou `mysql://user:password@localhost:3308/users` (local com MySQL em 3308).
+- Tabela `users` criada via Prisma migrations ao subir o container.
+
 ## Como rodar localmente
 
-1. **Pré-requisitos:** Node.js 20+, npm.
+1. **Pré-requisitos:** Node.js 20+, npm, MySQL (ou use apenas Docker).
 2. **Instalar dependências:**
    ```bash
    npm install
    ```
-3. **Configurar ambiente:** copiar `.env.example` para `.env` e ajustar (para apenas subir o app, `PORT=3002` é suficiente).
-4. **Subir o servidor:**
+3. **Configurar ambiente:** copiar `.env.example` para `.env` e preencher `DATABASE_URL` (ex.: `mysql://user:password@localhost:3308/users` se o MySQL estiver na porta 3308).
+4. **Migrações:** `npx prisma migrate deploy` (ou `npm run prisma:migrate` em dev).
+5. **Subir o servidor:**
    ```bash
    npm run start:dev
    ```
    O app estará em `http://localhost:3002`.
+
+## Como rodar via Docker
+
+Na **raiz do repositório** (onde está o `docker-compose.yml`):
+
+```bash
+docker-compose up --build
+```
+
+- **Users** sobe na porta **3002** e conecta ao MySQL **db-users** (porta 3308 no host).
+- Para subir apenas Users e o banco:
+  ```bash
+  docker-compose up --build db-users users
+  ```
+
+**Dependências:** Docker e Docker Compose. O serviço `users` depende de `db-users` (healthcheck); as migrações rodam no startup do container.
 
 ## Configuração inicial
 
