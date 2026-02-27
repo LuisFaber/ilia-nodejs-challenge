@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -43,18 +43,25 @@ export class WalletController {
   @ApiOperation({ summary: "Create a transaction (credit or debit)" })
   @ApiBody({ type: CreateTransactionDto })
   @ApiResponse({ status: 200, description: "Transaction created", type: TransactionResponseDto })
-  @ApiResponse({ status: 400, description: "Invalid body (amount or type)" })
+  @ApiResponse({ status: 400, description: "Invalid body (amount or type) or insufficient balance for debit" })
   @ApiResponse({ status: 401, description: "Access token is missing or invalid" })
   async createTransaction(
     @UserId() userId: string,
     @Body() dto: CreateTransactionDto
   ) {
-    const transaction = await this.createTransactionUseCase.run({
-      userId,
-      amount: dto.amount,
-      type: dto.type,
-    });
-    return toTransactionResponse(transaction);
+    try {
+      const transaction = await this.createTransactionUseCase.run({
+        userId,
+        amount: dto.amount,
+        type: dto.type,
+      });
+      return toTransactionResponse(transaction);
+    } catch (err) {
+      if (err instanceof Error && err.message === "Insufficient balance for debit") {
+        throw new BadRequestException("Insufficient balance for debit");
+      }
+      throw err;
+    }
   }
 
   @Get("balance")
