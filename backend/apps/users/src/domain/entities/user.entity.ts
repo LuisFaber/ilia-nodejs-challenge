@@ -1,13 +1,12 @@
 import { DomainError } from "../errors";
-
-const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+import { Email } from "../value-objects/email.vo";
 
 export class User {
   private constructor(
     private readonly _id: string,
     private readonly _firstName: string,
     private readonly _lastName: string,
-    private readonly _email: string,
+    private readonly _email: Email,
     private readonly _password: string,
     private readonly _createdAt: Date,
     private readonly _updatedAt: Date
@@ -17,7 +16,7 @@ export class User {
     id: string;
     firstName: string;
     lastName: string;
-    email: string;
+    email: Email;
     passwordHash: string;
     createdAt: Date;
     updatedAt: Date;
@@ -25,7 +24,6 @@ export class User {
     User.validateId(params.id);
     User.validateFirstName(params.firstName);
     User.validateLastName(params.lastName);
-    User.validateEmail(params.email);
     User.validatePasswordHash(params.passwordHash);
     User.validateDate("createdAt", params.createdAt);
     User.validateDate("updatedAt", params.updatedAt);
@@ -34,7 +32,7 @@ export class User {
       params.id,
       params.firstName.trim(),
       params.lastName.trim(),
-      params.email.trim().toLowerCase(),
+      params.email,
       params.passwordHash,
       params.createdAt,
       params.updatedAt
@@ -56,15 +54,6 @@ export class User {
   private static validateLastName(lastName: string): void {
     if (typeof lastName !== "string" || lastName.trim().length === 0) {
       throw new DomainError("Last name must be a non-empty string");
-    }
-  }
-
-  private static validateEmail(email: string): void {
-    if (typeof email !== "string" || email.trim().length === 0) {
-      throw new DomainError("Email must be a non-empty string");
-    }
-    if (!EMAIL_REGEX.test(email.trim().toLowerCase())) {
-      throw new DomainError("Email must have a valid format");
     }
   }
 
@@ -92,7 +81,7 @@ export class User {
     return this._lastName;
   }
 
-  get email(): string {
+  get email(): Email {
     return this._email;
   }
 
@@ -113,7 +102,7 @@ export class User {
       id: this._id,
       first_name: this._firstName,
       last_name: this._lastName,
-      email: this._email,
+      email: this._email.value,
       created_at: this._createdAt.toISOString(),
       updated_at: this._updatedAt.toISOString(),
     };
