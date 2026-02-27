@@ -46,7 +46,8 @@ services:
       test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 15
+      start_period: 90s
 
   users:
     build:
@@ -56,6 +57,7 @@ services:
       - "3002:3002"
     environment:
       PORT: "3002"
+      ILIACHALLENGE: ILIACHALLENGE
       DATABASE_URL: mysql://user:password@db-users:3306/users
     depends_on:
       db-users:

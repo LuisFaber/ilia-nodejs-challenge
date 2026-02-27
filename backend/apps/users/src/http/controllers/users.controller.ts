@@ -7,7 +7,6 @@ import {
   Param,
   Patch,
   Post,
-  UseGuards,
 } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiResponse, ApiTags } from "@nestjs/swagger";
 import {
@@ -16,15 +15,13 @@ import {
   UpdateUserUseCase,
   DeleteUserUseCase,
 } from "../../application/use-cases";
-import { JwtAuthGuard } from "../guards/jwt-auth.guard";
 import { UserId } from "../decorators/user-id.decorator";
+import { Public } from "../decorators/public.decorator";
 import { CreateUserDto } from "../dto/create-user.dto";
 import { UpdateUserDto } from "../dto/update-user.dto";
 
 @ApiTags("users")
-@ApiBearerAuth()
 @Controller("users")
-@UseGuards(JwtAuthGuard)
 export class UsersController {
   constructor(
     private readonly createUser: CreateUserUseCase,
@@ -33,8 +30,9 @@ export class UsersController {
     private readonly deleteUser: DeleteUserUseCase
   ) {}
 
+  @Public()
   @Post()
-  @ApiOperation({ summary: "Create user" })
+  @ApiOperation({ summary: "Create user (public - registration)" })
   @ApiResponse({ status: 201, description: "User created" })
   @ApiResponse({ status: 400, description: "Validation error" })
   @ApiResponse({ status: 409, description: "Email already registered" })
@@ -49,8 +47,10 @@ export class UsersController {
   }
 
   @Get(":id")
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Get user by id" })
   @ApiResponse({ status: 200, description: "User found" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
   @ApiResponse({ status: 403, description: "Forbidden" })
   @ApiResponse({ status: 404, description: "User not found" })
   async getById(@Param("id") id: string, @UserId() userId: string) {
@@ -62,8 +62,10 @@ export class UsersController {
   }
 
   @Patch(":id")
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Update user first_name and last_name" })
   @ApiResponse({ status: 200, description: "User updated" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
   @ApiResponse({ status: 403, description: "Forbidden" })
   @ApiResponse({ status: 404, description: "User not found" })
   async update(
@@ -83,8 +85,10 @@ export class UsersController {
   }
 
   @Delete(":id")
+  @ApiBearerAuth()
   @ApiOperation({ summary: "Delete user" })
   @ApiResponse({ status: 204, description: "User deleted" })
+  @ApiResponse({ status: 401, description: "Unauthorized" })
   @ApiResponse({ status: 403, description: "Forbidden" })
   @ApiResponse({ status: 404, description: "User not found" })
   async delete(@Param("id") id: string, @UserId() userId: string) {

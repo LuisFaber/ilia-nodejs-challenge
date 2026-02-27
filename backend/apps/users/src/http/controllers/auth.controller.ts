@@ -4,6 +4,7 @@ import { JwtService } from "@nestjs/jwt";
 import { AuthenticateUserUseCase } from "../../application/use-cases";
 import type { JwtPayload } from "../strategies/jwt.strategy";
 import { LoginDto } from "../dto/login.dto";
+import { Public } from "../decorators/public.decorator";
 
 @ApiTags("auth")
 @Controller("auth")
@@ -13,6 +14,7 @@ export class AuthController {
     private readonly jwtService: JwtService
   ) {}
 
+  @Public()
   @Post()
   @ApiOperation({ summary: "Authenticate and get access token" })
   @ApiResponse({ status: 200, description: "Returns user and access_token" })
