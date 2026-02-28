@@ -28,4 +28,29 @@ export default {
     insufficientBalance: "Insufficient balance for debit.",
     emptyTransactions: "No transactions yet.",
   },
+  landing: {
+    hero: {
+      title: "Control your financial orbit.",
+      subtitle: "A secure and modern digital wallet platform built for precision and control.",
+      ctaLogin: "Log in",
+      ctaRegister: "Create account",
+    },
+    navbar: {
+      ctaLogin: "Log in",
+      logoAlt: "WalletX",
+      themeLight: "Switch to light theme",
+      themeDark: "Switch to dark theme",
+    },
+    features: {
+      title: "Built for financial precision",
+      cards: {
+        secure: { title: "Secure by Design", description: "Enterprise-grade security for your assets and data." },
+        control: { title: "Real-time Control", description: "Instant visibility and control over every transaction." },
+        insights: { title: "Smart Insights", description: "Clear analytics to guide your financial decisions." },
+      },
+    },
+    footer: {
+      copyright: "© 2026 WalletX. All rights reserved.",
+    },
+  },
 } as const;

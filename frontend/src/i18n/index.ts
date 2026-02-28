@@ -12,16 +12,19 @@ const resources = {
     common: ptBR.common,
     auth: ptBR.auth,
     wallet: ptBR.wallet,
+    landing: ptBR.landing,
   },
   en: {
     common: en.common,
     auth: en.auth,
     wallet: en.wallet,
+    landing: en.landing,
   },
   es: {
     common: es.common,
     auth: es.auth,
     wallet: es.wallet,
+    landing: es.landing,
   },
 };
 
