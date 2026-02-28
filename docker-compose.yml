@@ -63,6 +63,21 @@ services:
       db-users:
         condition: service_healthy
 
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_WALLET_API_URL: http://localhost:3001
+        NEXT_PUBLIC_USERS_API_URL: http://localhost:3002
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+    depends_on:
+      - wallet
+      - users
+
 volumes:
   db_wallet_data:
   users_mysql_data:

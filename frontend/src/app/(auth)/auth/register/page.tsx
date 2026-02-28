@@ -1,0 +1,10 @@
+export default function RegisterPage() {
+  return (
+    <main className="flex min-h-screen items-center justify-center p-4">
+      <div className="w-full max-w-sm rounded-lg border border-neutral-800 bg-neutral-900 p-6 shadow-sm">
+        <h1 className="mb-4 text-xl font-semibold text-white">Registrar</h1>
+        <p className="text-sm text-neutral-400">Formulário de registro (a implementar).</p>
+      </div>
+    </main>
+  );
+}

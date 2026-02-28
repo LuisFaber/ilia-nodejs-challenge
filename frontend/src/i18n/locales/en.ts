@@ -1,0 +1,31 @@
+export default {
+  common: {
+    appName: "walletX",
+    loading: "Loading...",
+    error: "Error",
+    save: "Save",
+    cancel: "Cancel",
+    close: "Close",
+  },
+  auth: {
+    login: "Login",
+    register: "Register",
+    email: "Email",
+    password: "Password",
+    firstName: "First name",
+    lastName: "Last name",
+    loginSuccess: "Login successful.",
+    loginError: "Invalid credentials.",
+    sessionExpired: "Session expired.",
+  },
+  wallet: {
+    balance: "Balance",
+    transactions: "Transactions",
+    credit: "Credit",
+    debit: "Debit",
+    createTransaction: "New transaction",
+    amount: "Amount",
+    insufficientBalance: "Insufficient balance for debit.",
+    emptyTransactions: "No transactions yet.",
+  },
+} as const;
