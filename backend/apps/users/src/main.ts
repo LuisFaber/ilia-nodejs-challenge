@@ -1,11 +1,12 @@
 import "dotenv/config";
 import { NestFactory } from "@nestjs/core";
-import { ValidationPipe } from "@nestjs/common";
+import { Logger, ValidationPipe } from "@nestjs/common";
 import { SwaggerModule, DocumentBuilder } from "@nestjs/swagger";
 import { AppModule } from "./app.module";
 import { env } from "./infrastructure/config/env";
 
 async function bootstrap(): Promise<void> {
+  const logger = new Logger("Bootstrap");
   const app = await NestFactory.create(AppModule);
 
   app.useGlobalPipes(
@@ -27,7 +28,7 @@ async function bootstrap(): Promise<void> {
   SwaggerModule.setup("docs", app, document);
 
   await app.listen(env.port);
-  console.log(`Users service running on port ${env.port}`);
+  logger.log(`Users service running on port ${env.port}`);
 }
 
 bootstrap();

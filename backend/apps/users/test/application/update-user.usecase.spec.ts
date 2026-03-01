@@ -3,7 +3,6 @@ import type { IUserRepository } from "../../src/domain/repositories";
 import type { IPasswordHasher } from "../../src/domain/services";
 import { User } from "../../src/domain/entities";
 import { Email } from "../../src/domain/value-objects";
-import { PASSWORD_HASHER } from "../../src/domain/ports";
 
 describe("UpdateUserUseCase", () => {
   let useCase: UpdateUserUseCase;

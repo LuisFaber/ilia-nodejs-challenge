@@ -1,4 +1,4 @@
-import { BadRequestException, Body, Controller, Get, Post, UseGuards } from "@nestjs/common";
+import { BadRequestException, Body, Controller, Get, Post, Query, UseGuards } from "@nestjs/common";
 import {
   ApiBearerAuth,
   ApiBody,
@@ -76,15 +76,29 @@ export class WalletController {
   }
 
   @Get("transactions")
-  @ApiOperation({ summary: "List user transactions" })
+  @ApiOperation({ summary: "List user transactions (paginated, 8 per page)" })
   @ApiResponse({
     status: 200,
-    description: "List of transactions",
-    type: [TransactionResponseDto],
+    description: "Paginated list of transactions",
   })
   @ApiResponse({ status: 401, description: "Access token is missing or invalid" })
-  async listTransactions(@UserId() userId: string) {
-    const transactions = await this.listTransactionsUseCase.run(userId);
-    return transactions.map(toTransactionResponse);
+  async listTransactions(
+    @UserId() userId: string,
+    @Query("page") page?: string,
+    @Query("limit") limit?: string
+  ) {
+    const pageNum = page ? Math.max(1, parseInt(page, 10) || 1) : 1;
+    const limitNum = limit ? Math.min(100, Math.max(1, parseInt(limit, 10) || 8)) : 8;
+    const result = await this.listTransactionsUseCase.run({
+      userId,
+      page: pageNum,
+      limit: limitNum,
+    });
+    return {
+      items: result.items.map(toTransactionResponse),
+      total: result.total,
+      page: result.page,
+      limit: result.limit,
+    };
   }
 }
