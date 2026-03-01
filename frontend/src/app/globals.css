@@ -5,10 +5,18 @@
 :root {
   --background: #000000;
   --foreground: #ffffff;
+  /* WalletX design system */
+  --wallet-bg: #0a0a0a;
+  --wallet-surface: #111111;
+  --wallet-muted: #8a8a8a;
+  --wallet-credit: #34c759;
+  --wallet-debit: #ff3b30;
 }
 
 html {
   scroll-behavior: smooth;
+  /* Reserve space for scrollbar so layout doesn't shift when switching pages */
+  scrollbar-gutter: stable;
 }
 
 body {

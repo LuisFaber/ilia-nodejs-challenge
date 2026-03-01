@@ -3,7 +3,7 @@
 import { ProtectedRoute } from "@/features/auth/components/ProtectedRoute";
 import { Header } from "@/features/layout/Header";
 
-export default function DashboardLayout({
+export default function ProfileLayout({
   children,
 }: {
   children: React.ReactNode;

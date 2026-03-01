@@ -13,6 +13,13 @@ const config: Config = {
       colors: {
         background: "var(--background)",
         foreground: "var(--foreground)",
+        wallet: {
+          bg: "var(--wallet-bg)",
+          surface: "var(--wallet-surface)",
+          muted: "var(--wallet-muted)",
+          credit: "var(--wallet-credit)",
+          debit: "var(--wallet-debit)",
+        },
       },
     },
   },
