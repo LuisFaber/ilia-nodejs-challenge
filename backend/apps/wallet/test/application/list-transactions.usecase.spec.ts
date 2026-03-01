@@ -36,11 +36,18 @@ describe("ListTransactionsUseCase", () => {
     const userId = "user-1";
     const createdAt = new Date("2025-01-15T10:00:00Z");
     const transactions = [
-      Transaction.createCredit("id-1", userId, Amount.create(100), createdAt),
+      Transaction.createCredit(
+        "id-1",
+        userId,
+        Amount.create(100),
+        "Deposit",
+        createdAt
+      ),
       Transaction.createDebit(
         "id-2",
         userId,
         Amount.create(30),
+        "Withdrawal",
         new Date("2025-01-16T10:00:00Z"),
         100
       ),

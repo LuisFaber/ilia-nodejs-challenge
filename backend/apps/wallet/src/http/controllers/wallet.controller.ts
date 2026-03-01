@@ -24,6 +24,7 @@ function toTransactionResponse(t: Transaction) {
     userId: t.userId,
     amount: t.amount.value,
     type: t.type.value.toLowerCase(),
+    description: t.description,
     createdAt: t.createdAt.toISOString(),
   };
 }
@@ -54,6 +55,7 @@ export class WalletController {
         userId,
         amount: dto.amount,
         type: dto.type,
+        description: dto.description?.trim(),
       });
       return toTransactionResponse(transaction);
     } catch (err) {

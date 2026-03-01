@@ -10,6 +10,7 @@ export interface CreateTransactionInput {
   userId: string;
   amount: number;
   type: string;
+  description?: string;
 }
 
 @Injectable()
@@ -20,7 +21,7 @@ export class CreateTransactionUseCase {
   ) {}
 
   async run(input: CreateTransactionInput): Promise<Transaction> {
-    const { userId, amount, type } = input;
+    const { userId, amount, type, description } = input;
     const amountVO = Amount.create(amount);
     const typeVO = TransactionType.create(type);
 
@@ -31,8 +32,8 @@ export class CreateTransactionUseCase {
 
       const transaction =
         typeVO.isCredit()
-          ? Transaction.createCredit(id, userId, amountVO, createdAt)
-          : Transaction.createDebit(id, userId, amountVO, createdAt, currentBalance);
+          ? Transaction.createCredit(id, userId, amountVO, description, createdAt)
+          : Transaction.createDebit(id, userId, amountVO, description, createdAt, currentBalance);
 
       await ctx.save(transaction);
       return transaction;
