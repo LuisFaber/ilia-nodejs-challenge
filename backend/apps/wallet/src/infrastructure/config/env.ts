@@ -1,11 +1,3 @@
-function getEnv(key: string): string {
-  const value = process.env[key];
-  if (value === undefined || value.length === 0) {
-    throw new Error(`${key} must be set in environment`);
-  }
-  return value;
-}
-
 const port = process.env.PORT ?? "3001";
 const jwtSecret = process.env.ILIACHALLENGE ?? process.env.JWT_SECRET;
 const databaseUrl = process.env.DATABASE_URL;

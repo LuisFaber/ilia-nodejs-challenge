@@ -49,6 +49,7 @@ describe("CreateTransactionUseCase", () => {
       userId,
       amount: 50,
       type: "credit",
+      description: "Deposit",
     });
 
     // Assert
@@ -71,6 +72,7 @@ describe("CreateTransactionUseCase", () => {
       userId,
       amount: 30,
       type: "debit",
+      description: "Withdrawal",
     });
 
     // Assert
@@ -94,6 +96,7 @@ describe("CreateTransactionUseCase", () => {
         userId,
         amount: 10,
         type: "debit",
+        description: "Withdrawal",
       })
     ).rejects.toThrow("Insufficient balance for debit");
 
@@ -112,6 +115,7 @@ describe("CreateTransactionUseCase", () => {
       userId,
       amount: 25,
       type: "credit",
+      description: "Deposit",
     });
 
     // Assert

@@ -1,89 +1,228 @@
-# ília - Code Challenge NodeJS
-**English**
-##### Before we start ⚠️
-**Please create a fork from this repository**
+# WalletX — ília Node.js Challenge
 
-## The Challenge:
-One of the ília Digital verticals is Financial and to level your knowledge we will do a Basic Financial Application and for that we divided this Challenge in 2 Parts.
+A full-stack FinTech wallet platform composed of two NestJS microservices and a Next.js 14 frontend.
 
-The first part is mandatory, which is to create a Wallet microservice to store the users' transactions, the second part is optional (*for Seniors, it's mandatory*) which is to create a Users Microservice with integration between the two microservices (Wallet and Users), using internal communications between them, that can be done in any of the following strategies: gRPC, REST, Kafka or via Messaging Queues and this communication must have a different security of the external application (JWT, SSL, ...), **Development in javascript (Node) is required.**
+```
+┌─────────────────┐    HTTP     ┌──────────────────┐
+│  Next.js 14     │ ──────────► │  Users MS :3002  │
+│  Frontend :3000 │             └──────────────────┘
+│  (BFF / SSR)    │    HTTP     ┌──────────────────┐
+│                 │ ──────────► │  Wallet MS :3001 │
+└─────────────────┘             └──────────────────┘
+```
 
-![diagram](diagram.png)
+## Stack
 
-### General Instructions:
-## Part 1 - Wallet Microservice
+| Layer      | Technology                                              |
+|------------|---------------------------------------------------------|
+| Frontend   | Next.js 14 (App Router), TypeScript, Tailwind CSS, React Query, i18next |
+| Backend    | NestJS, TypeScript, Prisma ORM, MySQL                   |
+| Auth       | JWT (httpOnly cookies via BFF — secret: `ILIACHALLENGE`) |
+| Containers | Docker + Docker Compose                                 |
 
-This microservice must be a digital Wallet where the user transactions will be stored 
+---
 
-### The Application must have
+## Prerequisites
 
-    - Project setup documentation (readme.md).
-    - Application and Database running on a container (Docker, ...).
-    - This Microservice must receive HTTP Request.
-    - Have a dedicated database (Postgres, MySQL, Mongo, DynamoDB, ...).
-    - JWT authentication on all routes (endpoints) the PrivateKey must be ILIACHALLENGE (passed by env var).
-    - Configure the Microservice port to 3001. 
-    - Gitflow applied with Code Review in each step, open a feature/branch, create at least one pull request and merge it with Main(master deprecated), this step is important to simulate a team work and not just a commit.
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/) ≥ 24
+- [Node.js](https://nodejs.org/) ≥ 20 (for local development only)
+- [npm](https://www.npmjs.com/) ≥ 9
 
-## Part 2 - Microservice Users and Wallet Integration
+---
 
-### The Application must have:
+## Quickstart — Docker Compose (recommended)
 
-    - Project setup documentation (readme.md).
-    - Application and Database running on a container (Docker, ...).
-    - This Microservice must receive HTTP Request.   
-    - Have a dedicated database(Postgres, MySQL, Mongo, DynamoDB...), you may use an Auth service like AWS Cognito.
-    - JWT authentication on all routes (endpoints) the PrivateKey must be ILIACHALLENGE (passed by env var).
-    - Set the Microservice port to 3002. 
-    - Gitflow applied with Code Review in each step, open a feature/branch, create at least one pull request and merge it with Main(master deprecated), this step is important to simulate a teamwork and not just a commit.
-    - Internal Communication Security (JWT, SSL, ...), if it is JWT the PrivateKey must be ILIACHALLENGE_INTERNAL (passed by env var).
-    - Communication between Microservices using any of the following: gRPC, REST, Kafka or via Messaging Queues (update your readme with the instructions to run if using a Docker/Container environment).
+```bash
+# Clone the repository
+git clone <your-fork-url>
+cd ilia-nodejs-challenge
 
-## Part 3 - Frontend Implementation - Fullstack candidates only
+# Start all services (databases + microservices + frontend)
+docker compose up --build
+```
 
-In this challenge, you will build the frontend application for a FinTech Wallet platform, integrating with the backend microservices provided in the Node.js challenge.
+| Service  | URL                        |
+|----------|----------------------------|
+| Frontend | http://localhost:3000      |
+| Wallet   | http://localhost:3001/docs |
+| Users    | http://localhost:3002/docs |
 
-The application must allow users to authenticate, view their wallet balance, list transactions, and create credit or debit operations. The goal is to evaluate your ability to design a modern, secure, and well-structured UI that consumes microservice APIs, handles authentication via JWT, and provides a solid user experience with proper loading, error, and empty states.
+To stop and remove volumes:
 
-You may implement the solution using React, Vue, or Angular, following the required stack for the position you're running for and best practices outlined in the challenge.
+```bash
+docker compose down -v
+```
 
-### Before you start ⚠️
+---
 
-- **Create a separate folder for the Frontend project**
-- Frontend must be built in **Typescript**.  
-- The goal is to deliver a production-like UI that consumes the backend services:
-  - Wallet Service (port **3001**)
-  - Users Service (port **3002**, optional but mandatory for Senior)
+## Environment Variables
 
-### Challenge Overview
+### Wallet Microservice (`backend/apps/wallet`)
 
-You will build a **web application** that allows a user to:
+| Variable       | Default                                         | Description                        |
+|----------------|-------------------------------------------------|------------------------------------|
+| `PORT`         | `3001`                                          | HTTP port                          |
+| `DATABASE_URL` | `mysql://wallet_user:wallet_pass@localhost:3306/wallet_db` | MySQL connection string |
+| `JWT_SECRET`   | `ILIACHALLENGE`                                 | JWT signing secret                 |
+| `ILIACHALLENGE`| `ILIACHALLENGE`                                 | Internal auth secret               |
 
-- Authenticate (if Users service exists)
-- View wallet balance
-- List transactions
-- Create transactions (credit/debit)
-- Handle loading, empty, and error states properly
+Create `backend/apps/wallet/.env` for local runs:
 
-### Design Guidelines
+```env
+PORT=3001
+DATABASE_URL=mysql://wallet_user:wallet_pass@localhost:3306/wallet_db
+JWT_SECRET=ILIACHALLENGE
+ILIACHALLENGE=ILIACHALLENGE
+```
 
-No visual prototype or UI mockups will be provided for this challenge on purpose. This is intentional so we can evaluate your product sense, design judgment, and ability to translate business requirements into a coherent user experience. You should focus on creating a clean, modern, and intuitive interface that prioritizes usability and clarity of financial information. Pay special attention to information hierarchy (for example, making balance visibility prominent), form usability and validation, transaction readability, and clear feedback for system states such as loading, success, and errors. Consistency in layout, spacing, typography, and component reuse is important, as well as responsiveness and accessibility basics. *We are not evaluating graphic design skills*, but rather your ability to craft a professional, production-ready UI that engineers and users would find reliable and easy to use.
+### Users Microservice (`backend/apps/users`)
 
-Feel free to leverage on any opensource components library.
+| Variable       | Default                                   | Description          |
+|----------------|-------------------------------------------|----------------------|
+| `PORT`         | `3002`                                    | HTTP port            |
+| `DATABASE_URL` | `mysql://user:password@localhost:3308/users` | MySQL connection string |
+| `JWT_SECRET`   | `ILIACHALLENGE`                           | JWT signing secret   |
 
-### Requirements 
-This frontend should reflect real-world practices:
-- secure JWT handling
-- clean UX flows
-- robust API integration
-- scalable component structure
-- test coverage where it matters
-- supports i18n
-- responsive design (supporting mobile browser)
+Create `backend/apps/users/.env` for local runs:
 
-#### In the end, send us your fork repo updated. As soon as you finish, please let us know.
+```env
+PORT=3002
+DATABASE_URL=mysql://user:password@localhost:3308/users
+JWT_SECRET=ILIACHALLENGE
+```
 
-#### We are available to answer any questions.
+### Frontend (`frontend`)
 
+| Variable                   | Description                            |
+|----------------------------|----------------------------------------|
+| `WALLET_API_URL`           | Internal URL for wallet service (SSR)  |
+| `USERS_API_URL`            | Internal URL for users service (SSR)   |
+| `NEXT_PUBLIC_WALLET_API_URL` | Public URL for wallet service (client) |
+| `NEXT_PUBLIC_USERS_API_URL`  | Public URL for users service (client)  |
 
-Happy coding! 🤓
+Create `frontend/.env.local` for local runs:
+
+```env
+WALLET_API_URL=http://localhost:3001
+USERS_API_URL=http://localhost:3002
+NEXT_PUBLIC_WALLET_API_URL=http://localhost:3001
+NEXT_PUBLIC_USERS_API_URL=http://localhost:3002
+```
+
+---
+
+## Local Development (without Docker)
+
+### 1 — Start the databases
+
+```bash
+docker compose up db-wallet db-users
+```
+
+### 2 — Wallet Microservice
+
+```bash
+cd backend/apps/wallet
+npm install
+npx prisma migrate deploy   # apply migrations
+npm run start:dev
+```
+
+### 3 — Users Microservice
+
+```bash
+cd backend/apps/users
+npm install
+npx prisma migrate deploy   # apply migrations
+npm run start:dev
+```
+
+### 4 — Frontend
+
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+Open http://localhost:3000.
+
+---
+
+## Running Tests
+
+### Backend (Wallet)
+
+```bash
+cd backend/apps/wallet
+npm test
+```
+
+### Backend (Users)
+
+```bash
+cd backend/apps/users
+npm test
+```
+
+### Frontend
+
+```bash
+cd frontend
+npm test          # run all tests
+npm test -- --watch   # watch mode
+```
+
+---
+
+## Load Tests
+
+A k6 load test suite is included in `load-test/`.
+
+```bash
+# Install k6: https://grafana.com/docs/k6/latest/set-up/install-k6/
+cd load-test
+k6 run script.js
+```
+
+---
+
+## API Documentation
+
+Both microservices expose a Swagger UI when running:
+
+- Wallet: http://localhost:3001/docs
+- Users:  http://localhost:3002/docs
+
+The full OpenAPI specification for the Users service is available at [`ms-users.yaml`](./ms-users.yaml).
+
+---
+
+## Project Structure
+
+```
+ilia-nodejs-challenge/
+├── backend/
+│   └── apps/
+│       ├── wallet/          # Wallet microservice (NestJS + Prisma)
+│       └── users/           # Users microservice (NestJS + Prisma + DDD)
+├── frontend/                # Next.js 14 App Router
+│   └── src/
+│       ├── app/             # Pages and API routes (BFF)
+│       ├── components/      # Shared UI components
+│       ├── features/        # Feature modules (auth, wallet, layout)
+│       ├── i18n/            # Translations (en, pt-BR, es)
+│       └── lib/             # Utilities (export, grouping)
+├── load-test/               # k6 performance tests
+├── docker-compose.yml
+└── ms-users.yaml            # OpenAPI spec (Users service)
+```
+
+---
+
+## Security Notes
+
+- JWT tokens are stored in **httpOnly, Secure, SameSite=Strict cookies** — never exposed to JavaScript.
+- The Next.js frontend acts as a **BFF (Backend For Frontend)**, proxying all authenticated requests server-side.
+- Each user can only read/update/delete **their own** profile (enforced by both JWT subject check in the controller and the BFF cookie layer).
+- Wallet balance is protected with **pessimistic locking** (`SELECT … FOR UPDATE`) to prevent race conditions.

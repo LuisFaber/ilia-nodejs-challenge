@@ -1,4 +1,4 @@
-import { ApiProperty } from "@nestjs/swagger";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
 
 export class TransactionResponseDto {
   @ApiProperty({ example: "uuid" })
@@ -12,6 +12,9 @@ export class TransactionResponseDto {
 
   @ApiProperty({ example: "credit", enum: ["credit", "debit"] })
   type!: string;
+
+  @ApiPropertyOptional({ example: "Initial deposit", description: "Transaction description (optional)" })
+  description?: string;
 
   @ApiProperty({ example: "2025-01-15T10:00:00.000Z" })
   createdAt!: string;

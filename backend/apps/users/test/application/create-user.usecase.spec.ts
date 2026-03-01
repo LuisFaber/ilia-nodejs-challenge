@@ -23,6 +23,7 @@ describe("CreateUserUseCase", () => {
       lastName: "Doe",
       email: Email.create("john@example.com"),
       passwordHash: "hashed",
+      language: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     });

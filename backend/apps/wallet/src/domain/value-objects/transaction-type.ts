@@ -9,8 +9,8 @@ export class TransactionType {
   }
 
   static create(value: string): TransactionType {
-    const normalized = String(value).toUpperCase();
-    if (normalized !== "CREDIT" && normalized !== "DEBIT") {
+    const normalized = String(value).toUpperCase() as TransactionTypeValue;
+    if (!VALID_TYPES.includes(normalized)) {
       throw new Error("Transaction type must be CREDIT or DEBIT");
     }
     return new TransactionType(normalized);

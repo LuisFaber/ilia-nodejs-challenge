@@ -1,6 +1,9 @@
 import { DomainError } from "../errors";
 import { Email } from "../value-objects/email.vo";
 
+const ALLOWED_LANGUAGES = ["en", "pt", "es"] as const;
+export type UserLanguage = (typeof ALLOWED_LANGUAGES)[number];
+
 export class User {
   private constructor(
     private readonly _id: string,
@@ -8,6 +11,7 @@ export class User {
     private readonly _lastName: string,
     private readonly _email: Email,
     private readonly _password: string,
+    private readonly _language: UserLanguage,
     private readonly _createdAt: Date,
     private readonly _updatedAt: Date
   ) {}
@@ -18,6 +22,7 @@ export class User {
     lastName: string;
     email: Email;
     passwordHash: string;
+    language: UserLanguage;
     createdAt: Date;
     updatedAt: Date;
   }): User {
@@ -25,6 +30,7 @@ export class User {
     User.validateFirstName(params.firstName);
     User.validateLastName(params.lastName);
     User.validatePasswordHash(params.passwordHash);
+    User.validateLanguage(params.language);
     User.validateDate("createdAt", params.createdAt);
     User.validateDate("updatedAt", params.updatedAt);
 
@@ -34,9 +40,18 @@ export class User {
       params.lastName.trim(),
       params.email,
       params.passwordHash,
+      params.language,
       params.createdAt,
       params.updatedAt
     );
+  }
+
+  private static validateLanguage(lang: string): void {
+    if (!ALLOWED_LANGUAGES.includes(lang as UserLanguage)) {
+      throw new DomainError(
+        `language must be one of: ${ALLOWED_LANGUAGES.join(", ")}`
+      );
+    }
   }
 
   private static validateId(id: string): void {
@@ -89,6 +104,10 @@ export class User {
     return this._password;
   }
 
+  get language(): UserLanguage {
+    return this._language;
+  }
+
   get createdAt(): Date {
     return new Date(this._createdAt.getTime());
   }
@@ -103,6 +122,7 @@ export class User {
       first_name: this._firstName,
       last_name: this._lastName,
       email: this._email.value,
+      language: this._language,
       created_at: this._createdAt.toISOString(),
       updated_at: this._updatedAt.toISOString(),
     };

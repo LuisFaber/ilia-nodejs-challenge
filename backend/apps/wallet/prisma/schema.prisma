@@ -8,11 +8,12 @@ datasource db {
 }
 
 model Transaction {
-  id        String   @id @default(uuid())
-  userId    String   @map("user_id")
-  amount    Int
-  type      String
-  createdAt DateTime @default(now()) @map("created_at")
+  id          String   @id @default(uuid())
+  userId      String   @map("user_id")
+  amount      Int
+  type        String
+  description String?  @db.VarChar(120)
+  createdAt   DateTime @default(now()) @map("created_at")
 
   @@index([userId])
   @@map("transactions")

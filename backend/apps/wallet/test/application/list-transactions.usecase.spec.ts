@@ -31,36 +31,49 @@ describe("ListTransactionsUseCase", () => {
     useCase = module.get(ListTransactionsUseCase);
   });
 
-  it("should return list of transactions", async () => {
+  it("should return paginated list of transactions", async () => {
     // Arrange
     const userId = "user-1";
     const createdAt = new Date("2025-01-15T10:00:00Z");
     const transactions = [
-      Transaction.createCredit("id-1", userId, Amount.create(100), createdAt),
+      Transaction.createCredit(
+        "id-1",
+        userId,
+        Amount.create(100),
+        "Deposit",
+        createdAt
+      ),
       Transaction.createDebit(
         "id-2",
         userId,
         Amount.create(30),
+        "Withdrawal",
         new Date("2025-01-16T10:00:00Z"),
         100
       ),
     ];
-    mockRepository.findByUserId.mockResolvedValue(transactions);
+    mockRepository.findByUserId.mockResolvedValue({ items: transactions, total: 2 });
 
     // Act
-    const result = await useCase.run(userId);
+    const result = await useCase.run({ userId });
 
     // Assert
     expect(mockRepository.findByUserId).toHaveBeenCalledTimes(1);
-    expect(mockRepository.findByUserId).toHaveBeenCalledWith(userId);
-    expect(result).toHaveLength(2);
-    expect(result[0]).toBeInstanceOf(Transaction);
-    expect(result[0].id).toBe("id-1");
-    expect(result[0].userId).toBe(userId);
-    expect(result[0].amount.value).toBe(100);
-    expect(result[0].isCredit()).toBe(true);
-    expect(result[1].id).toBe("id-2");
-    expect(result[1].isDebit()).toBe(true);
-    expect(result[1].amount.value).toBe(30);
+    expect(mockRepository.findByUserId).toHaveBeenCalledWith(userId, {
+      page: 1,
+      limit: 8,
+    });
+    expect(result.items).toHaveLength(2);
+    expect(result.total).toBe(2);
+    expect(result.page).toBe(1);
+    expect(result.limit).toBe(8);
+    expect(result.items[0]).toBeInstanceOf(Transaction);
+    expect(result.items[0].id).toBe("id-1");
+    expect(result.items[0].userId).toBe(userId);
+    expect(result.items[0].amount.value).toBe(100);
+    expect(result.items[0].isCredit()).toBe(true);
+    expect(result.items[1].id).toBe("id-2");
+    expect(result.items[1].isDebit()).toBe(true);
+    expect(result.items[1].amount.value).toBe(30);
   });
 });

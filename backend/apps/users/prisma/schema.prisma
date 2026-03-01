@@ -13,6 +13,7 @@ model User {
   firstName String   @map("first_name")
   lastName  String   @map("last_name")
   password  String
+  language  String   @default("en") @map("language")
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
 

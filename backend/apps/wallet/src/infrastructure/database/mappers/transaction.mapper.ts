@@ -12,10 +12,11 @@ export function toDomain(row: PrismaTransactionRow): Transaction {
   const type = TransactionType.create(row.type);
   const createdAt = new Date(row.createdAt);
 
+  const description = row.description ?? undefined;
   if (type.isCredit()) {
-    return Transaction.createCredit(row.id, row.userId, amount, createdAt);
+    return Transaction.createCredit(row.id, row.userId, amount, description, createdAt);
   }
-  return Transaction.createDebit(row.id, row.userId, amount, createdAt, row.amount);
+  return Transaction.createDebit(row.id, row.userId, amount, description, createdAt, row.amount);
 }
 
 export function toPersistence(transaction: Transaction): {
@@ -23,6 +24,7 @@ export function toPersistence(transaction: Transaction): {
   userId: string;
   amount: number;
   type: string;
+  description: string | null;
   createdAt: Date;
 } {
   return {
@@ -30,6 +32,7 @@ export function toPersistence(transaction: Transaction): {
     userId: transaction.userId,
     amount: transaction.amount.value,
     type: transaction.type.value,
+    description: transaction.description ?? null,
     createdAt: transaction.createdAt,
   };
 }

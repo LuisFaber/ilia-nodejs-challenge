@@ -9,15 +9,17 @@ services:
     volumes:
       - db_wallet_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot_pass"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-P", "3306", "-u", "root", "-proot_pass"]
       interval: 5s
       timeout: 5s
-      retries: 5
+      retries: 15
+      start_period: 60s
 
   wallet:
     build:
       context: ./backend/apps/wallet
       dockerfile: Dockerfile
+    restart: on-failure
     ports:
       - "3001:3001"
     environment:
@@ -43,16 +45,17 @@ services:
     volumes:
       - users_mysql_data:/var/lib/mysql
     healthcheck:
-      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-proot"]
+      test: ["CMD", "mysqladmin", "ping", "-h", "127.0.0.1", "-P", "3306", "-u", "root", "-proot"]
       interval: 5s
       timeout: 5s
       retries: 15
-      start_period: 90s
+      start_period: 60s
 
   users:
     build:
       context: ./backend/apps/users
       dockerfile: Dockerfile
+    restart: on-failure
     ports:
       - "3002:3002"
     environment:
@@ -62,6 +65,23 @@ services:
     depends_on:
       db-users:
         condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      args:
+        NEXT_PUBLIC_WALLET_API_URL: http://localhost:3001
+        NEXT_PUBLIC_USERS_API_URL: http://localhost:3002
+    ports:
+      - "3000:3000"
+    environment:
+      PORT: "3000"
+      WALLET_API_URL: http://wallet:3001
+      USERS_API_URL: http://users:3002
+    depends_on:
+      - wallet
+      - users
 
 volumes:
   db_wallet_data:

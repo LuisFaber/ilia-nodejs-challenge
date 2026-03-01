@@ -1,1 +1,1 @@
-export { User } from "./user.entity";
+export { User, type UserLanguage } from "./user.entity";

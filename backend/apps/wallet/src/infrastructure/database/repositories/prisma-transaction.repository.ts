@@ -1,7 +1,12 @@
 import { Injectable } from "@nestjs/common";
 import type { Prisma } from "@prisma/client";
 import { PrismaService } from "../prisma.service";
-import type { ITransactionContext, ITransactionRepository } from "../../../domain/ports";
+import type {
+  ITransactionContext,
+  ITransactionRepository,
+  FindByUserIdOptions,
+  FindByUserIdResult,
+} from "../../../domain/ports";
 import { Transaction } from "../../../domain/entities/transaction";
 import { toDomain, toPersistence } from "../mappers/transaction.mapper";
 
@@ -18,12 +23,28 @@ export class PrismaTransactionRepository implements ITransactionRepository {
     await this.prisma.transaction.create({ data });
   }
 
-  async findByUserId(userId: string): Promise<Transaction[]> {
-    const rows = await this.prisma.transaction.findMany({
-      where: { userId },
-      orderBy: { createdAt: "asc" },
-    });
-    return rows.map(toDomain);
+  async findByUserId(
+    userId: string,
+    options?: FindByUserIdOptions
+  ): Promise<FindByUserIdResult> {
+    const page = options?.page ?? 1;
+    const limit = Math.min(Math.max(options?.limit ?? 8, 1), 100);
+    const skip = (page - 1) * limit;
+
+    const [items, total] = await Promise.all([
+      this.prisma.transaction.findMany({
+        where: { userId },
+        orderBy: { createdAt: "desc" },
+        take: limit,
+        skip,
+      }),
+      this.prisma.transaction.count({ where: { userId } }),
+    ]);
+
+    return {
+      items: items.map(toDomain),
+      total,
+    };
   }
 
   async getBalance(userId: string): Promise<number> {
