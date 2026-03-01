@@ -8,12 +8,14 @@ type PrismaUserRow = Awaited<
 
 export function toDomain(row: PrismaUserRow): User {
   const email = Email.create(row.email);
+  const language = (row.language ?? "en") as "en" | "pt" | "es";
   return User.create({
     id: row.id,
     firstName: row.firstName,
     lastName: row.lastName,
     email,
     passwordHash: row.password,
+    language,
     createdAt: row.createdAt,
     updatedAt: row.updatedAt,
   });
@@ -26,6 +28,7 @@ export function toPersistence(user: User) {
     lastName: user.lastName,
     email: user.email.value,
     password: user.password,
+    language: user.language,
     createdAt: user.createdAt,
     updatedAt: user.updatedAt,
   };

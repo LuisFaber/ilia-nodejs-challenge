@@ -1,5 +1,5 @@
-import { ApiProperty } from "@nestjs/swagger";
-import { IsEmail, IsNotEmpty, IsString, MinLength } from "class-validator";
+import { ApiProperty, ApiPropertyOptional } from "@nestjs/swagger";
+import { IsEmail, IsIn, IsNotEmpty, IsOptional, IsString, MinLength } from "class-validator";
 
 export class CreateUserDto {
   @ApiProperty({ example: "John" })
@@ -21,5 +21,11 @@ export class CreateUserDto {
   @IsString()
   @MinLength(6, { message: "password must be at least 6 characters" })
   password: string;
+
+  @ApiPropertyOptional({ example: "en", enum: ["en", "pt", "es"], default: "en" })
+  @IsOptional()
+  @IsString()
+  @IsIn(["en", "pt", "es"], { message: "language must be en, pt or es" })
+  language?: "en" | "pt" | "es";
 }
 

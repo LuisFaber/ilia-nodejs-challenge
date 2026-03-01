@@ -42,6 +42,7 @@ export class UsersController {
       lastName: dto.last_name,
       email: dto.email,
       password: dto.password,
+      language: dto.language,
     });
     return user.toJSON();
   }
@@ -63,7 +64,7 @@ export class UsersController {
 
   @Patch(":id")
   @ApiBearerAuth()
-  @ApiOperation({ summary: "Update user first_name and last_name" })
+  @ApiOperation({ summary: "Update user (first_name, last_name, email, password, language)" })
   @ApiResponse({ status: 200, description: "User updated" })
   @ApiResponse({ status: 401, description: "Unauthorized" })
   @ApiResponse({ status: 403, description: "Forbidden" })
@@ -80,6 +81,9 @@ export class UsersController {
       id,
       firstName: dto.first_name,
       lastName: dto.last_name,
+      email: dto.email,
+      password: dto.password,
+      language: dto.language,
     });
     return user.toJSON();
   }

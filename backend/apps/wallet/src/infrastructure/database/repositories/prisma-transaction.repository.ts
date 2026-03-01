@@ -21,7 +21,7 @@ export class PrismaTransactionRepository implements ITransactionRepository {
   async findByUserId(userId: string): Promise<Transaction[]> {
     const rows = await this.prisma.transaction.findMany({
       where: { userId },
-      orderBy: { createdAt: "asc" },
+      orderBy: { createdAt: "desc" },
     });
     return rows.map(toDomain);
   }

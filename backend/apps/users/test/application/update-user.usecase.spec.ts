@@ -1,11 +1,14 @@
 import { UpdateUserUseCase } from "../../src/application/use-cases/update-user.usecase";
 import type { IUserRepository } from "../../src/domain/repositories";
+import type { IPasswordHasher } from "../../src/domain/services";
 import { User } from "../../src/domain/entities";
 import { Email } from "../../src/domain/value-objects";
+import { PASSWORD_HASHER } from "../../src/domain/ports";
 
 describe("UpdateUserUseCase", () => {
   let useCase: UpdateUserUseCase;
   let userRepository: jest.Mocked<IUserRepository>;
+  let passwordHasher: jest.Mocked<IPasswordHasher>;
 
   function createMockUser(overrides?: { id?: string; firstName?: string; lastName?: string }) {
     return User.create({
@@ -14,6 +17,7 @@ describe("UpdateUserUseCase", () => {
       lastName: overrides?.lastName ?? "Doe",
       email: Email.create("john@example.com"),
       passwordHash: "hashed",
+      language: "en",
       createdAt: new Date(),
       updatedAt: new Date(),
     });
@@ -28,8 +32,9 @@ describe("UpdateUserUseCase", () => {
       update: jest.fn(),
       delete: jest.fn(),
     } as any;
+    passwordHasher = { hash: jest.fn().mockResolvedValue("hashed") } as any;
 
-    useCase = new UpdateUserUseCase(userRepository);
+    useCase = new UpdateUserUseCase(userRepository, passwordHasher);
   });
 
   it("should update user successfully", async () => {
@@ -48,6 +53,7 @@ describe("UpdateUserUseCase", () => {
     expect(result.firstName).toBe("Jane");
     expect(result.lastName).toBe("Smith");
     expect(result.email.value).toBe("john@example.com");
+    expect(result.language).toBe("en");
   });
 
   it("should throw error if user not found", async () => {

@@ -12,6 +12,7 @@ export interface CreateUserInput {
   lastName: string;
   email: string;
   password: string;
+  language?: "en" | "pt" | "es";
 }
 
 @Injectable()
@@ -31,6 +32,7 @@ export class CreateUserUseCase {
     }
 
     const passwordHash = await this.passwordHasher.hash(input.password);
+    const language = (input.language ?? "en") as "en" | "pt" | "es";
     const now = new Date();
     const user = User.create({
       id: randomUUID(),
@@ -38,6 +40,7 @@ export class CreateUserUseCase {
       lastName: input.lastName,
       email: emailVo,
       passwordHash,
+      language,
       createdAt: now,
       updatedAt: now,
     });
