@@ -1,20 +1,18 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
-import { AuthLayout } from "@/features/auth/components/AuthLayout";
-import { LoginForm } from "@/features/auth/components/LoginForm";
-import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useAuth } from "../hooks/useAuth";
 import { Spinner } from "@/components/ui/Spinner";
 
-export default function LoginPage() {
+export function ProtectedRoute({ children }: { children: ReactNode }) {
   const router = useRouter();
   const { isAuthenticated, isLoading } = useAuth();
 
   useEffect(() => {
     if (isLoading) return;
-    if (isAuthenticated) {
-      router.replace("/dashboard");
+    if (!isAuthenticated) {
+      router.replace("/auth/login");
     }
   }, [isAuthenticated, isLoading, router]);
 
@@ -26,11 +24,9 @@ export default function LoginPage() {
     );
   }
 
-  if (isAuthenticated) return null;
+  if (!isAuthenticated) {
+    return null;
+  }
 
-  return (
-    <AuthLayout>
-      <LoginForm />
-    </AuthLayout>
-  );
+  return <>{children}</>;
 }

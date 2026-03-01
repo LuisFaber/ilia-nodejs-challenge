@@ -1,6 +1,6 @@
 "use client";
 
-import { useAuth } from "@/hooks/useAuth";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 import { Button } from "@/components/ui/Button";
 
 export function Header() {
