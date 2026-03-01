@@ -11,18 +11,21 @@ const resources = {
   "pt-BR": {
     common: ptBR.common,
     auth: ptBR.auth,
+    profile: ptBR.profile,
     wallet: ptBR.wallet,
     landing: ptBR.landing,
   },
   en: {
     common: en.common,
     auth: en.auth,
+    profile: en.profile,
     wallet: en.wallet,
     landing: en.landing,
   },
   es: {
     common: es.common,
     auth: es.auth,
+    profile: es.profile,
     wallet: es.wallet,
     landing: es.landing,
   },

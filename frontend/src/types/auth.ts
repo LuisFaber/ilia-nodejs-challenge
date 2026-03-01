@@ -3,6 +3,7 @@ export type User = {
   email: string;
   first_name: string;
   last_name: string;
+  language?: "en" | "pt" | "es";
 };
 
 export type AuthResponse = {

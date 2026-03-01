@@ -46,10 +46,6 @@ export function AddTransactionModal({
     const desc = description.trim();
     const amountNum = Math.abs(Number(amount.replace(/,/g, ".")));
 
-    if (!desc) {
-      setError(t("errorDescriptionRequired"));
-      return;
-    }
     if (!amountNum || amountNum <= 0) {
       setError(t("errorAmountInvalid"));
       return;
@@ -61,7 +57,7 @@ export function AddTransactionModal({
       await walletService.createTransaction({
         amount: Math.round(amountNum),
         type,
-        description: desc,
+        description: desc || undefined,
       });
       reset();
       onClose();

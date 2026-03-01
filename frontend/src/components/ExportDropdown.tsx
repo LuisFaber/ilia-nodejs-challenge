@@ -3,20 +3,37 @@
 import { useRef, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import type { TransactionItemData } from "./TransactionItem";
-import { exportToCSV, exportToXLSX } from "@/lib/exportTransactions";
+import { exportToCSV, exportToXLSX, type ExportLocale } from "@/lib/exportTransactions";
 
 interface ExportDropdownProps {
   transactions: TransactionItemData[];
   className?: string;
 }
 
+const LOCALE_MAP: Record<string, ExportLocale> = {
+  en: "en",
+  "pt-BR": "pt-BR",
+  pt: "pt-BR",
+  es: "es",
+};
+
 export function ExportDropdown({
   transactions,
   className = "",
 }: ExportDropdownProps) {
-  const { t } = useTranslation("wallet");
+  const { t, i18n } = useTranslation("wallet");
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const exportLocale: ExportLocale = LOCALE_MAP[i18n.language] ?? "en";
+  const exportOptions = {
+    columnDate: t("date"),
+    columnDescription: t("description"),
+    columnType: t("type"),
+    columnAmount: t("amount"),
+    sheetName: t("exportSheetName"),
+    fileNameBase: t("exportFileName"),
+    locale: exportLocale,
+  };
 
   useEffect(() => {
     if (!open) return;
@@ -30,12 +47,12 @@ export function ExportDropdown({
   }, [open]);
 
   const handleCSV = () => {
-    exportToCSV(transactions);
+    exportToCSV(transactions, exportOptions);
     setOpen(false);
   };
 
   const handleXLSX = async () => {
-    await exportToXLSX(transactions);
+    await exportToXLSX(transactions, exportOptions);
     setOpen(false);
   };
 

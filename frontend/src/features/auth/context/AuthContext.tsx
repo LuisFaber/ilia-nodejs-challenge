@@ -24,6 +24,8 @@ export type AuthContextValue = {
     last_name: string;
   }) => Promise<void>;
   logout: () => Promise<void>;
+  refreshUser: () => Promise<void>;
+  setUser: (user: User | null) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -81,8 +83,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       login,
       register,
       logout,
+      refreshUser: loadUser,
+      setUser,
     }),
-    [user, isLoading, login, register, logout]
+    [user, isLoading, login, register, logout, loadUser]
   );
 
   return (

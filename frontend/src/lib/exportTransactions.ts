@@ -1,9 +1,36 @@
 import type { TransactionItemData } from "@/components/TransactionItem";
 
-const CSV_COLUMNS = ["Data", "Descrição", "Tipo", "Valor"] as const;
+export type ExportLocale = "en" | "pt-BR" | "es";
 
-function formatValue(amount: number): string {
-  return new Intl.NumberFormat("en-US", {
+const LOCALE_MAP: Record<ExportLocale, string> = {
+  en: "en-US",
+  "pt-BR": "pt-BR",
+  es: "es",
+};
+
+export interface ExportOptions {
+  columnDate: string;
+  columnDescription: string;
+  columnType: string;
+  columnAmount: string;
+  sheetName: string;
+  fileNameBase: string;
+  locale: ExportLocale;
+}
+
+const DEFAULT_OPTIONS: ExportOptions = {
+  columnDate: "Date",
+  columnDescription: "Description",
+  columnType: "Type",
+  columnAmount: "Amount",
+  sheetName: "Transactions",
+  fileNameBase: "walletx-transactions",
+  locale: "en",
+};
+
+function formatValue(amount: number, locale: ExportLocale): string {
+  const localeTag = LOCALE_MAP[locale];
+  return new Intl.NumberFormat(localeTag, {
     style: "currency",
     currency: "USD",
     minimumFractionDigits: 2,
@@ -11,9 +38,10 @@ function formatValue(amount: number): string {
   }).format(amount);
 }
 
-function formatDateForExport(createdAt?: string): string {
+function formatDateForExport(createdAt: string | undefined, locale: ExportLocale): string {
   if (!createdAt) return "";
-  return new Date(createdAt).toLocaleDateString("pt-BR", {
+  const localeTag = LOCALE_MAP[locale];
+  return new Date(createdAt).toLocaleDateString(localeTag, {
     day: "2-digit",
     month: "2-digit",
     year: "numeric",
@@ -27,14 +55,23 @@ function escapeCSVCell(value: string): string {
   return value;
 }
 
-export function exportToCSV(transactions: TransactionItemData[]): void {
-  const rows: string[][] = [CSV_COLUMNS.slice()];
+function getDateSuffix(): string {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export function exportToCSV(
+  transactions: TransactionItemData[],
+  options: Partial<ExportOptions> = {}
+): void {
+  const opts = { ...DEFAULT_OPTIONS, ...options };
+  const headers = [opts.columnDate, opts.columnDescription, opts.columnType, opts.columnAmount];
+  const rows: string[][] = [headers];
   for (const t of transactions) {
     rows.push([
-      formatDateForExport(t.createdAt),
+      formatDateForExport(t.createdAt, opts.locale),
       t.title,
       t.category,
-      formatValue(t.amount),
+      formatValue(t.amount, opts.locale),
     ]);
   }
   const csv = rows.map((row) => row.map(escapeCSVCell).join(",")).join("\r\n");
@@ -42,17 +79,22 @@ export function exportToCSV(transactions: TransactionItemData[]): void {
   const url = URL.createObjectURL(blob);
   const a = document.createElement("a");
   a.href = url;
-  a.download = `walletx-transacoes-${new Date().toISOString().slice(0, 10)}.csv`;
+  a.download = `${opts.fileNameBase}-${getDateSuffix()}.csv`;
   a.click();
   URL.revokeObjectURL(url);
 }
 
-export async function exportToXLSX(transactions: TransactionItemData[]): Promise<void> {
+export async function exportToXLSX(
+  transactions: TransactionItemData[],
+  options: Partial<ExportOptions> = {}
+): Promise<void> {
+  const opts = { ...DEFAULT_OPTIONS, ...options };
   const XLSX = await import("xlsx");
-  const rows: (string | number)[][] = [CSV_COLUMNS.slice()];
+  const headers = [opts.columnDate, opts.columnDescription, opts.columnType, opts.columnAmount];
+  const rows: (string | number)[][] = [headers];
   for (const t of transactions) {
     rows.push([
-      formatDateForExport(t.createdAt),
+      formatDateForExport(t.createdAt, opts.locale),
       t.title,
       t.category,
       t.amount,
@@ -60,9 +102,6 @@ export async function exportToXLSX(transactions: TransactionItemData[]): Promise
   }
   const ws = XLSX.utils.aoa_to_sheet(rows);
   const wb = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(wb, ws, "Transações");
-  XLSX.writeFile(
-    wb,
-    `walletx-transacoes-${new Date().toISOString().slice(0, 10)}.xlsx`
-  );
+  XLSX.utils.book_append_sheet(wb, ws, opts.sheetName);
+  XLSX.writeFile(wb, `${opts.fileNameBase}-${getDateSuffix()}.xlsx`);
 }

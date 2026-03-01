@@ -10,6 +10,7 @@ export type User = {
   email: string;
   first_name: string;
   last_name: string;
+  language?: "en" | "pt" | "es";
   created_at?: string;
   updated_at?: string;
 };
@@ -40,8 +41,29 @@ async function api<T>(
     const err = await res.json().catch(() => ({ message: res.statusText }));
     throw new Error((err as { message?: string }).message ?? "Request failed");
   }
-  return res.json();
+  if (res.status === 204) return undefined as T;
+  return res.json() as Promise<T>;
 }
+
+async function apiNoBody(path: string, init?: RequestInit): Promise<void> {
+  const res = await fetch(`${getBase()}${path}`, {
+    ...init,
+    credentials: "include",
+    headers: { ...init?.headers },
+  });
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ message: res.statusText }));
+    throw new Error((err as { message?: string }).message ?? "Request failed");
+  }
+}
+
+export type UpdateUserPayload = {
+  first_name?: string;
+  last_name?: string;
+  email?: string;
+  password?: string;
+  language?: "en" | "pt" | "es";
+};
 
 export const authService = {
   async login(payload: LoginPayload): Promise<{ user: User }> {
@@ -63,5 +85,17 @@ export const authService = {
     } catch {
       return null;
     }
+  },
+
+  async updateUser(userId: string, payload: UpdateUserPayload): Promise<User> {
+    const data = await api<User>(`/api/users/${userId}`, {
+      method: "PATCH",
+      body: payload,
+    });
+    return data as User;
+  },
+
+  async deleteUser(userId: string): Promise<void> {
+    await apiNoBody(`/api/users/${userId}`, { method: "DELETE" });
   },
 };
