@@ -63,7 +63,12 @@ export function AddTransactionModal({
       onClose();
       onSuccess();
     } catch (e) {
-      setError(e instanceof Error ? e.message : t("errorCreateFailed"));
+      const message = e instanceof Error ? e.message : "";
+      const isInsufficientBalance =
+        message.toLowerCase().includes("insufficient balance");
+      setError(
+        isInsufficientBalance ? t("insufficientBalance") : message || t("errorCreateFailed")
+      );
     } finally {
       setLoading(false);
     }

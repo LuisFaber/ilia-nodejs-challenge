@@ -38,10 +38,9 @@ function DebitIcon() {
 }
 
 export function TransactionItem({ transaction, index }: TransactionItemProps) {
-  const { t } = useTranslation("wallet");
+  useTranslation("wallet");
   const isCredit = transaction.amount >= 0;
-  const categoryLabel =
-    transaction.category === "Income" ? t("income") : t("expense");
+  const categoryLabel = transaction.category;
 
   return (
     <motion.li

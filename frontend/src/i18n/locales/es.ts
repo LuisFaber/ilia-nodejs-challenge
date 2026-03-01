@@ -2,6 +2,7 @@ export default {
   common: {
     appName: "walletX",
     loading: "Cargando...",
+    loadMore: "Cargar más",
     error: "Error",
     save: "Guardar",
     cancel: "Cancelar",
@@ -67,7 +68,8 @@ export default {
     errorDescriptionRequired: "La descripción es obligatoria",
     errorAmountInvalid: "Ingresa un monto positivo válido",
     errorCreateFailed: "Error al crear la transacción",
-    insufficientBalance: "Saldo insuficiente para débito.",
+    transactionFallback: "Transacción",
+    insufficientBalance: "El monto del débito debe ser menor o igual a tu saldo disponible.",
     emptyTransactions: "Aún no hay transacciones.",
     export: "Exportar",
     exportCSV: "Exportar CSV",

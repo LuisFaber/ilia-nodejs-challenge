@@ -31,13 +31,25 @@ export type WalletTransaction = {
   createdAt: string;
 };
 
+export type GetTransactionsResult = {
+  items: WalletTransaction[];
+  total: number;
+  page: number;
+  limit: number;
+};
+
 export const walletService = {
   async getBalance(): Promise<{ amount: number }> {
     return api<{ amount: number }>("/api/wallet/balance");
   },
 
-  async getTransactions(): Promise<WalletTransaction[]> {
-    return api<WalletTransaction[]>("/api/wallet/transactions");
+  async getTransactions(options?: { page?: number; limit?: number }): Promise<GetTransactionsResult> {
+    const page = options?.page ?? 1;
+    const limit = options?.limit ?? 8;
+    const res = await api<GetTransactionsResult>(
+      `/api/wallet/transactions?page=${page}&limit=${limit}`
+    );
+    return res ?? { items: [], total: 0, page: 1, limit: 8 };
   },
 
   async createTransaction(params: {

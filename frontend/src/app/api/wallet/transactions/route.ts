@@ -11,24 +11,29 @@ function getAuthHeaders(token: string) {
   return { Authorization: `Bearer ${token}` };
 }
 
-export async function GET() {
+export async function GET(request: Request) {
   const cookieStore = await cookies();
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) {
     return NextResponse.json({ message: "Unauthorized" }, { status: 401 });
   }
+  const { searchParams } = new URL(request.url);
+  const page = searchParams.get("page") ?? "1";
+  const limit = searchParams.get("limit") ?? "8";
   try {
-    const res = await fetch(`${WALLET_API}/wallet/transactions`, {
-      headers: getAuthHeaders(token),
-    });
+    const res = await fetch(
+      `${WALLET_API}/wallet/transactions?page=${encodeURIComponent(page)}&limit=${encodeURIComponent(limit)}`,
+      { headers: getAuthHeaders(token) }
+    );
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      return NextResponse.json(
-        (data as { message?: string }).message ?? "Request failed",
-        { status: res.status }
-      );
+      const msg = (data as { message?: string })?.message ?? "Request failed";
+      return NextResponse.json({ message: msg }, { status: res.status });
     }
-    return NextResponse.json(Array.isArray(data) ? data : []);
+    if (data && typeof data === "object" && Array.isArray(data.items)) {
+      return NextResponse.json(data);
+    }
+    return NextResponse.json({ items: [], total: 0, page: 1, limit: 8 });
   } catch {
     return NextResponse.json(
       { message: "Service unavailable" },
@@ -55,10 +60,8 @@ export async function POST(request: Request) {
     });
     const data = await res.json().catch(() => ({}));
     if (!res.ok) {
-      return NextResponse.json(
-        (data as { message?: string }).message ?? "Request failed",
-        { status: res.status }
-      );
+      const msg = (data as { message?: string })?.message ?? "Request failed";
+      return NextResponse.json({ message: msg }, { status: res.status });
     }
     return NextResponse.json(data);
   } catch {
