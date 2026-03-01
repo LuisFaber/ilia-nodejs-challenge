@@ -34,7 +34,7 @@ A full-stack FinTech wallet platform composed of two NestJS microservices and a 
 
 ```bash
 # Clone the repository
-git clone <your-fork-url>
+git clone git@github.com:LuisFaber/ilia-nodejs-challenge.git
 cd ilia-nodejs-challenge
 
 # Start all services (databases + microservices + frontend)
